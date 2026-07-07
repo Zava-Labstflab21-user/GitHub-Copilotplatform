@@ -1,0 +1,46 @@
+name: Build and Deploy Container
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  IMAGE_NAME: zavastorefront
+  CONTAINER_REGISTRY: ${{ vars.AZURE_CONTAINER_REGISTRY_NAME }}
+  APP_NAME: ${{ vars.AZURE_APP_SERVICE_NAME }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Azure Container Registry
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Build and push container image
+        run: |
+          az acr login --name "$CONTAINER_REGISTRY"
+          docker build -t "$CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}" ./src
+          docker push "$CONTAINER_REGISTRY.azurecr.io/$IMAGE_NAME:${{ github.sha }}"
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ env.APP_NAME }}
+          images: ${{ env.CONTAINER_REGISTRY }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
