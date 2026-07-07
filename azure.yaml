@@ -1,0 +1,15 @@
+name: zava-storefront
+metadata:
+  template: zava-storefront@0.0.1-beta
+infra:
+  provider: bicep
+  path: infra
+services:
+  web:
+    project: ./src
+    language: dotnet
+    host: containerapp
+    docker:
+      path: ./Dockerfile
+      remoteBuild: true
+    hooks: {}

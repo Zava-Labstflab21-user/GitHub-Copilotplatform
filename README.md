@@ -16,6 +16,37 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
 contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
 
+## Quickstart: GitHub Actions container deployment
+
+This repository includes a minimal GitHub Actions workflow that builds the .NET app as a container and deploys it to an Azure Web App.
+
+### Required GitHub secrets and variables
+
+#### Secrets
+- AZURE_CREDENTIALS: A JSON object with the Azure service principal credentials used by the workflow.
+
+Example:
+
+```json
+{
+  "clientId": "<appId>",
+  "clientSecret": "<password>",
+  "subscriptionId": "<subscription-id>",
+  "tenantId": "<tenant-id>"
+}
+```
+
+#### Variables
+- AZURE_CONTAINER_REGISTRY_NAME: The name of the Azure Container Registry created in the infrastructure.
+- AZURE_WEBAPP_NAME: The name of the Azure Web App resource created by the infrastructure.
+- AZURE_RESOURCE_GROUP: The resource group that contains the registry and web app.
+- AZURE_LOCATION: The Azure region used by the deployment.
+
+### How to use it
+1. Add the secrets and variables above in your GitHub repository settings.
+2. Ensure the service principal has permission to push to ACR and deploy to the Web App.
+3. Trigger the workflow manually or push to the main branch.
+
 ## Trademarks
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft 
